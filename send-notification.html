@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Notification</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf/notyf.min.css">
+    <style>
+        body {
+            background-color: #1e1e2e;
+            color: #dcdcdc;
+            font-family: 'Inter', sans-serif;
+        }
+        .container {
+            max-width: 600px;
+        }
+        .form-container {
+            background-color: #2e2e3e;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .swal2-popup {
+            background: #2e2e3e;
+            color: #ffffff;
+            border-radius: 20px !important;
+            padding: 2rem !important;
+        }
+        .swal2-title {
+            font-size: 1.5rem !important;
+        }
+        .swal2-html-container {
+            font-size: 1.25rem !important;
+            text-align: left;
+        }
+        .swal2-confirm {
+            background-color: #4f46e5 !important;
+            border-radius: 10px !important;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center">
+    <div class="container mx-auto p-4">
+        <h1 class="text-4xl font-bold mb-4 text-center">Send Notification</h1>
+        <form id="notificationForm" class="space-y-4 form-container">
+            <div>
+                <label for="message" class="block text-sm font-medium text-gray-300">Message</label>
+                <input type="text" id="message" name="message" class="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md shadow-sm text-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">Send</button>
+        </form>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-database.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyBv-P_GIcmPm-Icmg-3qS1rsJu7PEeV9WM",
+            authDomain: "teamanon-6c9c5.firebaseapp.com",
+            databaseURL: "https://teamanon-6c9c5-default-rtdb.firebaseio.com",
+            projectId: "teamanon-6c9c5",
+            storageBucket: "teamanon-6c9c5.appspot.com",
+            messagingSenderId: "665722574881",
+            appId: "1:665722574881:web:ecebdee116c3a1663e2b60"
+        };
+        firebase.initializeApp(config);
+        var database = firebase.database();
+
+        document.getElementById('notificationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var message = document.getElementById('message').value;
+            if (message.trim() === "") {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Message cannot be empty!',
+                    background: '#2e2e3e',
+                    color: '#ffffff',
+                    showConfirmButton: true,
+                    confirmButtonText: 'Close',
+                    customClass: {
+                        popup: 'rounded-lg',
+                        title: 'text-2xl',
+                        htmlContainer: 'text-left'
+                    },
+                    buttonsStyling: false,
+                    confirmButtonColor: '#4f46e5',
+                    confirmButtonClass: 'swal2-confirm'
+                });
+                return;
+            }
+            var notificationRef = database.ref('notifications');
+            notificationRef.push({
+                message: message,
+                timestamp: new Date().toISOString()
+            }).then(function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Notification sent successfully!',
+                    background: '#2e2e3e',
+                    color: '#ffffff',
+                    showConfirmButton: true,
+                    confirmButtonText: 'Close',
+                    customClass: {
+                        popup: 'rounded-lg',
+                        title: 'text-2xl',
+                        htmlContainer: 'text-left'
+                    },
+                    buttonsStyling: false,
+                    confirmButtonColor: '#4f46e5',
+                    confirmButtonClass: 'swal2-confirm'
+                });
+                document.getElementById('message').value = "";
+            });
+        });
+    </script>
+</body>
+</html>

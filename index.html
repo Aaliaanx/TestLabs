@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notice Board Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf/notyf.min.css">
+    <style>
+        body {
+            background-color: #1e1e2e;
+            color: #dcdcdc;
+            font-family: 'Inter', sans-serif;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .notice {
+            background-color: #2e2e3e;
+            padding: 1rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        .notice.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .swal2-popup {
+            background: #2e2e3e;
+            color: #ffffff;
+            border-radius: 20px !important;
+            padding: 2rem !important;
+        }
+        .swal2-title {
+            font-size: 1.5rem !important;
+        }
+        .swal2-html-container {
+            font-size: 1.25rem !important;
+            text-align: left;
+        }
+        .swal2-confirm {
+            background-color: #4f46e5 !important;
+            border-radius: 10px !important;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center">
+    <div class="container mx-auto p-4">
+        <h1 class="text-4xl font-bold mb-4 text-center">Notice Board</h1>
+        <div id="notifications" class="space-y-4"></div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-database.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/notyf/notyf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyBv-P_GIcmPm-Icmg-3qS1rsJu7PEeV9WM",
+            authDomain: "teamanon-6c9c5.firebaseapp.com",
+            databaseURL: "https://teamanon-6c9c5-default-rtdb.firebaseio.com",
+            projectId: "teamanon-6c9c5",
+            storageBucket: "teamanon-6c9c5.appspot.com",
+            messagingSenderId: "665722574881",
+            appId: "1:665722574881:web:ecebdee116c3a1663e2b60"
+        };
+        firebase.initializeApp(config);
+        var database = firebase.database();
+
+        var notyf = new Notyf({
+            duration: 0,
+            dismissible: true,
+            position: {
+                x: 'right',
+                y: 'top',
+            },
+            types: [
+                {
+                    type: 'success',
+                    background: '#4f46e5',
+                    icon: false
+                }
+            ]
+        });
+
+        var notificationsRef = database.ref('notifications');
+
+        notificationsRef.on('child_added', function(snapshot) {
+            var notification = snapshot.val();
+            var notificationElement = document.createElement('div');
+            notificationElement.classList.add('notice');
+            notificationElement.innerHTML = `
+                <div class="text-lg">${notification.message}</div>
+                <div class="text-sm text-gray-400">${new Date(notification.timestamp).toLocaleString()}</div>
+            `;
+            document.getElementById('notifications').appendChild(notificationElement);
+            setTimeout(() => {
+                notificationElement.classList.add('visible');
+            }, 10);
+
+            // Display a SweetAlert2 notification
+            Swal.fire({
+                icon: 'success',
+                title: 'New notification',
+                html: `<p>${notification.message}</p><p class="text-sm text-gray-400">${new Date(notification.timestamp).toLocaleString()}</p>`,
+                background: '#2e2e3e',
+                color: '#ffffff',
+                showConfirmButton: true,
+                confirmButtonText: 'Close',
+                customClass: {
+                    popup: 'rounded-lg',
+                    title: 'text-2xl',
+                    htmlContainer: 'text-left'
+                },
+                buttonsStyling: false,
+                confirmButtonColor: '#4f46e5',
+                confirmButtonClass: 'swal2-confirm'
+            });
+
+            // Play notification sound
+            var audio = new Audio('https://www.soundjay.com/button/beep-07.wav');
+            audio.play();
+        });
+    </script>
+</body>
+</html>
