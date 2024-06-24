@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy ASP.Net Core app to Azure Web App - Aalianx
+name: Build and deploy ASP.Net Core app to Azure Web App - aalian
 
 on:
   push:
@@ -38,29 +38,20 @@ jobs:
     runs-on: windows-latest
     needs: build
     environment:
-      name: 'Production'
+      name: 'production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write #This is required for requesting the JWT
-
+    
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
         with:
           name: .net-app
       
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_F64CD94D3FDD4C6C80B2164C2C90D8E1 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D05550E349CF4996A0F4EBA8D6382E2D }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_6A5FA0AFAD8F488EAFB16EA80AC5B8E4 }}
-
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'Aalianx'
-          slot-name: 'Production'
+          app-name: 'aalian'
+          slot-name: 'production'
           package: .
-          
+          publish-profile: ${{ secrets.AzureAppService_PublishProfile_cb704608251142f7a79cb7142e7f6d8b }}
